@@ -1,0 +1,34 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy To DEV Server
+        uses: appleboy/ssh-action@v1.0.3
+
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          username: ${{ secrets.DEV_USER }}
+          key: ${{ secrets.DEV_SSH_KEY }}
+
+          script: |
+            cd /home/ec2-user/apps/employee-portal
+
+            git pull origin dev
+
+            sudo cp index.html /usr/share/nginx/html/
+
+            sudo systemctl restart nginx
